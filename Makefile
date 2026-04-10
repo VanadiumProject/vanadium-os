@@ -1,3 +1,5 @@
+HAL		?= virt
+
 CC 		:= clang
 
 INCLUDE_DIR	:= include
@@ -11,6 +13,12 @@ LDFLAGS		:= -fuse-ld=lld -nostdlib -T$(SRC_DIR)/linker.ld \
 C_SRCS		:= $(SRC_DIR)/kernel/kernel.c
 ASM_SRCS	:= $(SRC_DIR)/bootloader/boot.S
 
+ifeq ($(HAL), virt)
+C_SRCS 		+= $(SRC_DIR)/hal/hal_virt.c
+endif
+ifeq ($(HAL), vanadium)
+C_SRCS		+= $(SRC_DIR)/hal/hal_vanadium.c
+endif
 OBJS		:= $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(C_SRCS)) \
 		   $(patsubst $(SRC_DIR)/%.S, $(BUILD_DIR)/%.o, $(ASM_SRCS))
 TARGET		:= $(BUILD_DIR)/vanadium_os.elf
