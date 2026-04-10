@@ -2,8 +2,8 @@
 #include "hardware.h"
 #include "kernel.h"
 
-#define USART1_THR  REG(USART1_BASE + 0x00)
-#define USART1_LSR  REG(USART1_BASE + 0x05)
+#define USART1_THR  REG8(USART1_BASE + 0x00)
+#define USART1_LSR  REG8(USART1_BASE + 0x05)
 
 void vanadium_uart_putc(char c){
 	while (!(USART1_LSR & (1 << 5)));
