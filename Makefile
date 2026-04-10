@@ -5,7 +5,7 @@ SRC_DIR		:= src
 BUILD_DIR	:= build
 
 CCFLAGS 	:= -Wall -Wextra --target=riscv32-unknown-none-elf -I$(INCLUDE_DIR)
-LDFLAGS		:= -fuse-ld=lld -nostdlib - T$(SRC_DIR)/linker.ld \
+LDFLAGS		:= -fuse-ld=lld -nostdlib -T$(SRC_DIR)/linker.ld \
 		   -Wl,-Map=$(BUILD_DIR)/os.map
 
 C_SRCS		:= $(SRC_DIR)/kernel/kernel.c
@@ -17,7 +17,7 @@ TARGET		:= $(BUILD_DIR)/vanadium_os.elf
 
 
 
-.PHONY: all clean
+.PHONY: all clean run
 
 all: $(TARGET)
 
@@ -33,3 +33,6 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.S
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+run: all
+	qemu-system-riscv32 -machine virt -bios none -kernel $(TARGET) -nographic
