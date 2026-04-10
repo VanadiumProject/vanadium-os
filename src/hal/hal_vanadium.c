@@ -14,10 +14,10 @@ void vanadium_uart_puts(const char * s){
 	while (*s) vanadium_uart_putc(*s++);
 }
 
-const uart_hal_t virt_hal = {
+const uart_hal_t vanadium_hal = {
 	.uart_putc = vanadium_uart_putc,
 	.uart_puts = vanadium_uart_puts
 };
 const uart_hal_t* get_hal(void){
-	return &virt_hal;
+	return &vanadium_hal;
 }
