@@ -1,0 +1,9 @@
+build/
+
+tags
+*.plist
+*.o
+compile_commands.json
+
+.cache/*
+build/*
