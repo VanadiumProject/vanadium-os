@@ -1,10 +1,6 @@
 #include "kernel.h"
 #include "hal.h"
 
-#include "kernel.h"
-#include "hardware.h"
-#include "hal.h"
-
 static ui32_t current_input = 0;
 
 void syscall_handler(ui32_t syscall_num, ui32_t arg0, ui32_t arg1, ui32_t arg2) {
