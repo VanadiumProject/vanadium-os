@@ -5,4 +5,4 @@
 - GPU supports: OpenCL 3.0, OpenGL ES 3.2 and Vulkan 1.2
 - Support 2x PCIe 2.0, 1 lane(Good for [expansion Connector](Expansion_Connector) idea)
 - eMMC 5.0
-- 5 Wh max consumption(only under non-ideal conditions), 0.13 Wh power leakage.
+- 5 W max consumption(only under non-ideal conditions), 0.13 W power leakage.
