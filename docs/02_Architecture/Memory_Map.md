@@ -1,34 +1,9 @@
-# Vanadium Memory Map
-
-The system uses **512 KB of shared SRAM** distributed across the three main units (Main CPU, PGPU, APU).
-
-## SRAM Distribution (Draft)
-
-| Memory Range (Offset) | Size | Purpose | Ownership/Access |
-| :--- | :--- | :--- | :--- |
-| `0x00000` - `0x01FFF` | 8 KB | **Kernel Core RAM** | Main CPU (RW) |
-| `0x02000` - `0x027FF` | 2 KB | **Shared Control Block** | All CPUs (RW) |
-| `0x02800` - `0x047FF` | 8 KB | **PGPU Command Queue** | Main (W) / PGPU (R) |
-| `0x04800` - `0x057FF` | 4 KB | **APU Audio Buffer** | Main (W) / APU (R) |
-| `0x05800` - `0x1FFFF` | 106 KB | **System/Shell Stack & Heap** | Main CPU (RW) |
-| `0x20000` - `0x7FFFF` | 384 KB | **Game/App Memory / Frame Buffer**| Shared (RW) |
-
-### Memory Regions Detail
-
-#### 1. Kernel Core RAM (8 KB)
-Used for the OS kernel's data, stack, and interrupt vectors. This must remain < 10 KB to meet NFR requirements.
-
-#### 2. Shared Control Block (2 KB)
-A synchronization area where state flags (e.g., `SYSTEM_READY`, `VBLANK_TRIGGER`, `APU_READY`) are stored.
-
-#### 3. PGPU Command Queue (8 KB)
-A ring buffer where the Main CPU writes drawing commands (e.g., `DRAW_SPRITE`, `CLEAR_SCREEN`, `UPDATE_PALETTE`) for the PGPU to execute.
-
-#### 4. APU Audio Buffer (4 KB)
-Used for passing procedural audio parameters or PCM streams from the Main CPU to the APU.
-
-#### 5. Game/App Memory (384 KB)
-The largest block, used by the loaded cartridge/application. Can be reconfigured as a frame buffer for direct pixel access or as raw asset RAM.
-
----
-*Note: Specific physical addresses (e.g., `0x20000000` for internal RAM) depend on the hardware target and will be mapped here once finalized.*
+>"""64 MB of RAM is more than the necessary for this application", we don't see it like that, 64 is the ceiling, it isn't obligatory nor limited, the recommended value is actually 28 MB, but we'll never tell you what to do."
+## Why 28 MB?
+- The idea is to give enough RAM for 2 720p screens, [more info](Expansion_Connector); The OS, and the game to run at the same time.
+	- The screens: For 720p(1280x720), RGBA(4 bytes), double buffering, a single screen uses 7.03 MB of RAM, for two of them 14.06 MB
+	- The OS: Our objective is to make it run as lean as possible, realistically saying, just the OS logic we expect to run, when focused at around 1 - 2 MB, and less than 1 MB when in background.
+	- Leaving around 12 MB of RAM for the game itself.
+But you are free to use how much RAM your heart desires, we recommend this value as it's enough for basic 3D rendering, even less if you make a 2D game, as it leaves the player's experience at a enjoyable state, it's not using everything, so it's a smooth experience.
+## Why 64 and not 32 MB then?
+>"Good question, if you actually thought of that, but the reality of the market doesn't landed us the ideal SoC, this was actually our objective with the SoC we were going to choose, the math works, but in practice, the existing SoC chips on the market only operate from 64 MB and above, because, starting in DDR3, the actual chips of memory were made to be of more and more capacity, now starting in 64MB, as the PC market required more RAM."
