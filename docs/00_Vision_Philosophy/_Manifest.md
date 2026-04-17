@@ -25,4 +25,5 @@
 - The Vanadium is a platform, a tool, and a challenge. **Welcome to the journey!**
 ### **Closing**
 > "Admiration comes from understanding."
+
 > "Complexity is a engineer's problem, the end user shouldn't be the target of not even a bit of that, our true objective is to make the user's experience truly excellent and have nothing that would make any user do anything but play and enjoy it"
