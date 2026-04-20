@@ -17,7 +17,7 @@
 
 // Syscall handler called from assembly trap
 // a7: syscall number, a0-a3: arguments
-void syscall_handler(ui32_t syscall_num, ui32_t arg0, ui32_t arg1, ui32_t arg2);
+void syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2);
 
 #endif
 

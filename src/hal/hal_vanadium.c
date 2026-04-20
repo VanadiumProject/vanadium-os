@@ -3,13 +3,13 @@
 #include "kernel.h"
 #include "types.h"
 
-#define USART1_RBR  REG8(USART1_BASE + 0x00)
-#define USART1_THR  REG8(USART1_BASE + 0x00)
-#define USART1_LSR  REG8(USART1_BASE + 0x05)
+#define UART_RBR   REG8(UART0_BASE + 0x00)
+#define UART_THR   REG8(UART0_BASE + 0x00)
+#define UART_LSR   REG8(UART0_BASE + 0x14)
 
 void vanadium_uart_putc(char c){
-	while (!(USART1_LSR & (1 << 5)));
-	USART1_THR = c;
+	while (!(UART_LSR & (1 << 5)));
+	UART_THR = c;
 }
 
 void vanadium_uart_puts(const char * s){
@@ -17,8 +17,8 @@ void vanadium_uart_puts(const char * s){
 }
 
 ui8_t vanadium_uart_getc(void){
-	while (!(USART1_LSR & (1 << 0)));
-	return USART1_RBR;
+	while (!(UART_LSR & (1 << 0)));
+	return UART_RBR;
 }
 
 const uart_hal_t vanadium_hal = {

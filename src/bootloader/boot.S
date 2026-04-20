@@ -11,8 +11,8 @@ _start:
 	la t1, _bss_end
 bss_loop:
 	bgeu t0, t1, bss_done
-	sw zero, 0(t0)
-	addi t0, t0, 4
+	sd zero, 0(t0)
+	addi t0, t0, 8
 	j bss_loop
 
 bss_done:
@@ -28,29 +28,29 @@ park:
 .align 4
 trap_handler:
 	# Save caller-saved registers
-	addi sp, sp, -64
-	sw ra, 0(sp)
-	sw t0, 4(sp)
-	sw t1, 8(sp)
-	sw t2, 12(sp)
-	sw a0, 16(sp)
-	sw a1, 20(sp)
-	sw a2, 24(sp)
-	sw a3, 28(sp)
-	sw a4, 32(sp)
-	sw a5, 36(sp)
-	sw a6, 40(sp)
-	sw a7, 44(sp)
-	sw t3, 48(sp)
-	sw t4, 52(sp)
-	sw t5, 56(sp)
-	sw t6, 60(sp)
+	addi sp, sp, -128
+	sd ra, 0(sp)
+	sd t0, 8(sp)
+	sd t1, 16(sp)
+	sd t2, 24(sp)
+	sd a0, 32(sp)
+	sd a1, 40(sp)
+	sd a2, 48(sp)
+	sd a3, 56(sp)
+	sd a4, 64(sp)
+	sd a5, 72(sp)
+	sd a6, 80(sp)
+	sd a7, 88(sp)
+	sd t3, 96(sp)
+	sd t4, 104(sp)
+	sd t5, 112(sp)
+	sd t6, 120(sp)
 
 	# Call C handler: syscall_handler(a7, a0, a1, a2)
 	mv a0, a7
-	lw a1, 16(sp)	# Original a0
-	lw a2, 20(sp)	# Original a1
-	lw a3, 24(sp)	# Original a2
+	ld a1, 32(sp)	# Original a0
+	ld a2, 40(sp)	# Original a1
+	ld a3, 48(sp)	# Original a2
 	call syscall_handler
 
 	# Move mepc forward by 4 (skip the ecall instruction)
@@ -59,22 +59,22 @@ trap_handler:
 	csrw mepc, t0
 
 	# Restore registers
-	lw ra, 0(sp)
-	lw t0, 4(sp)
-	lw t1, 8(sp)
-	lw t2, 12(sp)
-	lw a0, 16(sp)
-	lw a1, 20(sp)
-	lw a2, 24(sp)
-	lw a3, 28(sp)
-	lw a4, 32(sp)
-	lw a5, 36(sp)
-	lw a6, 40(sp)
-	lw a7, 44(sp)
-	lw t3, 48(sp)
-	lw t4, 52(sp)
-	lw t5, 56(sp)
-	lw t6, 60(sp)
-	addi sp, sp, 64
+	ld ra, 0(sp)
+	ld t0, 8(sp)
+	ld t1, 16(sp)
+	ld t2, 24(sp)
+	ld a0, 32(sp)
+	ld a1, 40(sp)
+	ld a2, 48(sp)
+	ld a3, 56(sp)
+	ld a4, 64(sp)
+	ld a5, 72(sp)
+	ld a6, 80(sp)
+	ld a7, 88(sp)
+	ld t3, 96(sp)
+	ld t4, 104(sp)
+	ld t5, 112(sp)
+	ld t6, 120(sp)
+	addi sp, sp, 128
 	mret
 		

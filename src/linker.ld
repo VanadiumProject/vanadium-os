@@ -9,24 +9,30 @@ MEMORY
 SECTIONS
 {
   .text : {
+    . = ALIGN(8);
     PROVIDE(_code_start = .);
     *(.text.init)
     *(.text .text.*)
+    . = ALIGN(8);
     PROVIDE(_code_end = .);
   } > RAM
 
   .rodata : {
+    . = ALIGN(8);
     *(.rodata .rodata.*)
   } > RAM
 
   .data : {
+    . = ALIGN(8);
     *(.data .data.*)
   } > RAM
 
   .bss : {
+    . = ALIGN(8);
     PROVIDE(_bss_start = .);
     *(.bss .bss.*)
     *(COMMON)
+    . = ALIGN(8);
     PROVIDE(_bss_end = .);
   } > RAM
 

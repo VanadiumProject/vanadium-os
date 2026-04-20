@@ -3,9 +3,9 @@
 #include "types.h"
 #include "hal.h"
 
-#define UART_RBR  REG8(QEMU_UART_BASE + 0x00)
-#define UART_THR  REG8(QEMU_UART_BASE + 0x00)
-#define UART_LSR  REG8(QEMU_UART_BASE + 0x05)
+#define UART_RBR  REG8(UART0_BASE + 0x00)
+#define UART_THR  REG8(UART0_BASE + 0x00)
+#define UART_LSR  REG8(UART0_BASE + 0x05)
 
 void virt_uart_putc(char c){
 	while (!(UART_LSR & (1 << 5)));

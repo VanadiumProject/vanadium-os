@@ -6,7 +6,8 @@ INCLUDE_DIR	:= include
 SRC_DIR		:= src
 BUILD_DIR	:= build
 
-CCFLAGS 	:= -Wall -Wextra --target=riscv32-unknown-none-elf -I$(INCLUDE_DIR)
+CCFLAGS 	:= -Wall -Wextra --target=riscv64-unknown-none-elf \
+		   -I$(INCLUDE_DIR) -march=rv64gc -mabi=lp64d -mcmodel=medany
 LDFLAGS		:= -fuse-ld=lld -nostdlib -T$(SRC_DIR)/linker.ld \
 		   -Wl,-Map=$(BUILD_DIR)/os.map
 
@@ -43,4 +44,4 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 run: all
-	qemu-system-riscv32 -machine virt -bios none -kernel $(TARGET) -nographic
+	qemu-system-riscv64 -machine virt -bios none -kernel $(TARGET) -nographic
