@@ -1,6 +1,6 @@
 >"""64 MB of RAM is more than the necessary for this application", we don't see it like that, 64 is the ceiling, it isn't obligatory nor limited, the recommended value is actually 28 MB, but we'll never tell you what to do."
 ## Why 28 MB?
-- The idea is to give enough RAM for 2 720p screens, [more info](Expansion_Connector); The OS, and the game to run at the same time.
+- The idea is to give enough RAM for 2 720p screens, [more info](../03_Hardware/Expansion_Connector); The OS, and the game to run at the same time.
 	- The screens: For 720p(1280x720), RGBA(4 bytes), double buffering, a single screen uses 7.03 MB of RAM, for two of them 14.06 MB
 	- The OS: Our objective is to make it run as lean as possible, realistically saying, just the OS logic we expect to run, when focused at around 1 - 2 MB, and less than 1 MB when in background.
 	- Leaving around 12 MB of RAM for the game itself.
