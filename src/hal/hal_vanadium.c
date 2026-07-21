@@ -29,3 +29,16 @@ const uart_hal_t vanadium_hal = {
 const uart_hal_t* get_hal(void){
 	return &vanadium_hal;
 }
+
+// PLACEHOLDER, NOT VERIFIED. This is a guess, and a wrong value here does not
+// fail loudly: it silently puts wrong times in every log we ever write, which
+// is worse than having no timestamp at all.
+//
+// The real value is in the device tree as timebase-frequency under /cpus, and
+// it is also in the manufacturer documentation. Confirm before trusting any
+// timing measured on hardware.
+#define VANADIUM_TIMEBASE_HZ	4000000ULL
+
+ui64_t get_timebase_hz(void){
+	return VANADIUM_TIMEBASE_HZ;
+}

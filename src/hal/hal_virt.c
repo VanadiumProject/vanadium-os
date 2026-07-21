@@ -29,3 +29,11 @@ const uart_hal_t virt_hal = {
 const uart_hal_t* get_hal(void){
 	return &virt_hal;
 }
+
+// QEMU virt runs the aclint-mtimer at 10 MHz; OpenSBI prints it at boot as
+// "Platform Timer Device : aclint-mtimer @ 10000000Hz".
+#define VIRT_TIMEBASE_HZ	10000000ULL
+
+ui64_t get_timebase_hz(void){
+	return VIRT_TIMEBASE_HZ;
+}

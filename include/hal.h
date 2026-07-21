@@ -15,5 +15,9 @@ typedef struct{
 
 const uart_hal_t* get_hal(void);
 
+// Tick rate of the architectural time counter, in Hz. Board specific, which is
+// the only reason it lives here: the counter itself is not.
+ui64_t get_timebase_hz(void);
+
 #endif
 

@@ -1,5 +1,6 @@
 #include "kernel.h"
 #include "kprintf.h"
+#include "ktime.h"
 #include "hal.h"
 
 static ui32_t current_input = 0;
@@ -30,7 +31,8 @@ static const char *trap_cause_name(uintptr_t scause) {
 // Anything that is not a syscall lands here instead of silently resuming at
 // the wrong instruction.
 void trap_fatal_handler(uintptr_t scause, uintptr_t sepc, uintptr_t stval) {
-	kprintf("\n!! FATAL TRAP !! %s\n", trap_cause_name(scause));
+	// Milliseconds since boot, per the log convention in Safety_Modes.
+	kprintf("\n[%lu ms] !! FATAL TRAP !! %s\n", ktime_ms(), trap_cause_name(scause));
 	kprintf("  scause = 0x%016lx\n", scause);
 	kprintf("  sepc   = 0x%016lx\n", sepc);
 	kprintf("  stval  = 0x%016lx\n", stval);
