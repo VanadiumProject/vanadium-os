@@ -22,7 +22,12 @@ uintptr_t syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1,
 
 // Called from the trap handler for anything that is not a syscall.
 // Reports the cause over UART and halts; never returns.
-void trap_fatal_handler(uintptr_t mcause, uintptr_t mepc, uintptr_t mtval);
+void trap_fatal_handler(uintptr_t scause, uintptr_t sepc, uintptr_t stval);
+
+// Handed to us by the previous boot stage and stashed in boot.S.
+// boot_dtb is the device tree pointer; nothing parses it yet.
+extern uintptr_t boot_hartid;
+extern uintptr_t boot_dtb;
 
 #endif
 

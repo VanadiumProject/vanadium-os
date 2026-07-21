@@ -3,7 +3,10 @@ ENTRY(_start)
 
 MEMORY
 {
-  RAM (rwx) : ORIGIN = 0x80000000, LENGTH = 128M
+  /* 0x80000000 is where the machine-level firmware lives; S-mode payloads
+     start at 0x80200000 by convention. This has to match wherever the
+     previous stage actually loads us. See docs/04_OS_VanadiumOS/Boot.md */
+  RAM (rwx) : ORIGIN = 0x80200000, LENGTH = 128M
 }
 
 SECTIONS

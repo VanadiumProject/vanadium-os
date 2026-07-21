@@ -82,7 +82,11 @@ What moves:
   `mret` becomes `sret`.
 - `mhartid` stops being readable. The hart ID arrives in `a0` and the device tree pointer in
   `a1`, and we must not clobber either before saving them.
-- The ecall exception code we dispatch on moves from 11 (from M-mode) to 9 (from S-mode).
+- The ecall exception code we dispatch on moves from 11 (from M-mode) to **8, from U-mode**.
+  Not 9. An ecall from S-mode is not delegatable and always traps to the firmware, so once we
+  are the supervisor, `ecall` means two different things depending on who runs it: from a game
+  in U-mode it is a syscall and it reaches us; from our own kernel it is an SBI call and it
+  reaches OpenSBI. Verified in the emulator, not assumed.
 - Our load address must agree with wherever U-Boot puts us. [See also](../02_Architecture/Memory_Map.md).
 
 >**TODO** confirm the DRAM base address and the U-Boot load address against the manufacturer

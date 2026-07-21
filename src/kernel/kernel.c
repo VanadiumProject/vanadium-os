@@ -14,15 +14,15 @@ static void kputhex(uintptr_t v) {
 
 // Placeholder reporting until kprintf exists. Anything that is not a syscall
 // lands here instead of silently resuming at the wrong instruction.
-void trap_fatal_handler(uintptr_t mcause, uintptr_t mepc, uintptr_t mtval) {
+void trap_fatal_handler(uintptr_t scause, uintptr_t sepc, uintptr_t stval) {
 	const uart_hal_t *hal = get_hal();
 
-	hal->uart_puts("\n!! FATAL TRAP !!\n  mcause = ");
-	kputhex(mcause);
-	hal->uart_puts("\n  mepc   = ");
-	kputhex(mepc);
-	hal->uart_puts("\n  mtval  = ");
-	kputhex(mtval);
+	hal->uart_puts("\n!! FATAL TRAP !!\n  scause = ");
+	kputhex(scause);
+	hal->uart_puts("\n  sepc   = ");
+	kputhex(sepc);
+	hal->uart_puts("\n  stval  = ");
+	kputhex(stval);
 	hal->uart_puts("\nHALTED\n");
 
 	while (1) __asm__ volatile ("wfi");

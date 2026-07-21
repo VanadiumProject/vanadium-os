@@ -20,10 +20,10 @@ typedef int64_t		i64_t;
 
 typedef struct {
 	uintptr_t xregs[32];
-	uintptr_t mepc;
-	uintptr_t mstatus;
-	uintptr_t mcause;
-	uintptr_t mtval;
+	uintptr_t sepc;
+	uintptr_t sstatus;
+	uintptr_t scause;
+	uintptr_t stval;
 	uintptr_t kernel_sp;
 } trap_frame_t;
 

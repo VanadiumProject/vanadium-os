@@ -13,7 +13,7 @@ LDFLAGS		:= -fuse-ld=lld -nostdlib -T$(SRC_DIR)/linker.ld \
 		   -Wl,-Map=$(BUILD_DIR)/os.map
 
 C_SRCS		:= $(SRC_DIR)/kernel/kernel.c
-ASM_SRCS	:= $(SRC_DIR)/bootloader/boot.S
+ASM_SRCS	:= $(SRC_DIR)/bootloader/entry.S
 
 ifeq ($(HAL), virt)
 C_SRCS 		+= $(SRC_DIR)/hal/hal_virt.c
@@ -45,4 +45,4 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 run: all
-	qemu-system-riscv64 -machine virt -bios none -kernel $(TARGET) -nographic
+	qemu-system-riscv64 -machine virt -bios default -kernel $(TARGET) -nographic
