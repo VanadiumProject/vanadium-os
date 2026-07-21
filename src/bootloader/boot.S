@@ -72,32 +72,69 @@ trap_handler:
 	sd x30, 240(sp)
 	sd x31, 248(sp)
 
-	# 4. SAVE CSRs
+	# 4. SAVE CSRs (t0 keeps mcause for the dispatch below)
 	csrr t0, mepc
 	sd t0,	256(sp)
 	csrr t0, mstatus
 	sd t0,	264(sp)
+	csrr t1, mtval
+	sd t1,	280(sp)
+	csrr t0, mcause
+	sd t0,	272(sp)
 
-	# 5. CALL C HANDLER: syscall_handler(num, arg0, arg1, arg2)
+	# 5. DISPATCH ON MCAUSE
+	# Bit 63 set => interrupt, clear => exception. Only the syscall path
+	# may advance mepc: an interrupt's mepc already points at the
+	# instruction that still has to run.
+	bltz t0, trap_interrupt
+
+	li t1, 11		# ecall from M-mode
+	beq t0, t1, trap_syscall
+	li t1, 8		# ecall from U-mode
+	beq t0, t1, trap_syscall
+	j trap_fatal
+
+trap_syscall:
+	# 6. CALL C HANDLER: syscall_handler(num, arg0, arg1, arg2)
 	# Mapping: a7=x17, a0=x10, a1=x11, a2=x12
 	ld a0,	136(sp)
 	ld a1,	80(sp)
 	ld a2,	88(sp)
 	ld a3,	96(sp)
 	call syscall_handler
+	sd a0,	80(sp)		# Return value lands in the caller's a0
 
-	# 6. RESTORE CSRs
+	# 7. STEP OVER THE ECALL
 	ld t0, 256(sp)
-	addi t0, t0, 4      # Skip ecall
+	addi t0, t0, 4
+	sd t0, 256(sp)
+	j trap_return
+
+trap_interrupt:
+	# Nothing enables interrupts yet (mie and mstatus.MIE are untouched),
+	# so anything landing here is unexpected. Timer/external dispatch
+	# hooks in here once the CLINT is up.
+	j trap_fatal
+
+trap_fatal:
+	# trap_fatal_handler(mcause, mepc, mtval) never returns
+	ld a0, 272(sp)
+	ld a1, 256(sp)
+	ld a2, 280(sp)
+	call trap_fatal_handler
+
+trap_return:
+	# 8. RESTORE CSRs
+	ld t0, 256(sp)
 	csrw mepc, t0
 	ld t0, 264(sp)
 	csrw mstatus, t0
 
-	# 7. PREPARE USER SP
+	# 9. PREPARE USER SP
 	ld t0, 16(sp)
 	csrw mscratch, t0
 
-	# 8. RESTORE GPRs
+	# 10. RESTORE GPRs
 	ld x1,  8(sp)
 	ld x3,  24(sp)
 	ld x4,  32(sp)
@@ -129,12 +166,19 @@ trap_handler:
 	ld x30, 240(sp)
 	ld x31, 248(sp)
 
-	# 9. RESTORE BRIDGE AND SWAP
+	# 11. RESTORE BRIDGE AND SWAP
 	ld x5, 40(sp)
 	csrrw sp, mscratch, sp
 	mret
 
-.section .data
-.align 8
+.section .bss
+.align 4
+
+# The trap frame sits at the TOP of this stack on purpose. The handler runs
+# with sp = main_trap_frame, so any C function it calls pushes its frame down
+# into trap_stack instead of over whatever happens to sit below us in memory.
+trap_stack:
+	.space 4096
 main_trap_frame:
-	.space 272 # (32 registers + mepc + mstatus) * 8 bytes
+	.space 296 # (32 registers + mepc + mstatus + mcause + mtval + kernel_sp) * 8 bytes
+		   # Must stay in sync with trap_frame_t in include/types.h

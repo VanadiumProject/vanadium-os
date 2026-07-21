@@ -17,7 +17,12 @@
 
 // Syscall handler called from assembly trap
 // a7: syscall number, a0-a3: arguments
-void syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2);
+// Returns the value the trap handler writes back into the caller's a0.
+uintptr_t syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2);
+
+// Called from the trap handler for anything that is not a syscall.
+// Reports the cause over UART and halts; never returns.
+void trap_fatal_handler(uintptr_t mcause, uintptr_t mepc, uintptr_t mtval);
 
 #endif
 

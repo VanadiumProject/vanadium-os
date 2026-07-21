@@ -3,21 +3,46 @@
 
 static ui32_t current_input = 0;
 
-void syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2) {
-	(void)arg0; (void)arg1; (void)arg2; // Silence unused warnings
+static void kputhex(uintptr_t v) {
+	const uart_hal_t *hal = get_hal();
+	const char *digits = "0123456789abcdef";
+
+	hal->uart_puts("0x");
+	for (i32_t i = 60; i >= 0; i -= 4)
+		hal->uart_putc(digits[(v >> i) & 0xf]);
+}
+
+// Placeholder reporting until kprintf exists. Anything that is not a syscall
+// lands here instead of silently resuming at the wrong instruction.
+void trap_fatal_handler(uintptr_t mcause, uintptr_t mepc, uintptr_t mtval) {
+	const uart_hal_t *hal = get_hal();
+
+	hal->uart_puts("\n!! FATAL TRAP !!\n  mcause = ");
+	kputhex(mcause);
+	hal->uart_puts("\n  mepc   = ");
+	kputhex(mepc);
+	hal->uart_puts("\n  mtval  = ");
+	kputhex(mtval);
+	hal->uart_puts("\nHALTED\n");
+
+	while (1) __asm__ volatile ("wfi");
+}
+
+uintptr_t syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2) {
+	(void)arg1; (void)arg2; // Silence unused warnings
 	const uart_hal_t *hal = get_hal();
 
 	switch (syscall_num) {
 		case SYSCALL_WRITE:
 			hal->uart_putc((char)arg0);
-			break;
+			return 0;
 		case SYSCALL_GET_INPUT:
-			// In final version, this reads GPIO. For now, it returns current_input
-			// which we'll update in kmain for testing.
-			// Actually, let's return it in a0 (which is the caller's a0 when we restore)
-			// Wait, the trap handler needs to know where to put the return value.
-			// Let's modify trap_handler to put syscall_handler's return value into a0.
-			break;
+			// The trap handler now writes this into the caller's a0 slot
+			// before restoring, so the value actually reaches the caller.
+			// In the final version this reads GPIO.
+			return current_input;
+		default:
+			return (uintptr_t)-1;
 	}
 }
 

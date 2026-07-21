@@ -20,9 +20,13 @@ typedef struct {
 	uintptr_t xregs[32];
 	uintptr_t mepc;
 	uintptr_t mstatus;
-	uintptr_t mcase;
+	uintptr_t mcause;
 	uintptr_t mtval;
 	uintptr_t kernel_sp;
 } trap_frame_t;
+
+// main_trap_frame in src/bootloader/boot.S reserves this many bytes by hand.
+// If this fires, the two went out of sync.
+_Static_assert(sizeof(trap_frame_t) == 296, "trap_frame_t must match .space in boot.S");
 
 #endif
