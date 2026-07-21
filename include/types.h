@@ -1,20 +1,22 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-	
-typedef unsigned char		ui8_t;
-typedef unsigned short		ui16_t;
-typedef unsigned int		ui32_t;
-typedef unsigned long long	ui64_t;
+// stdint.h/stddef.h are provided by the compiler, not by a libc, so they are
+// safe in a freestanding kernel. size_t, uintptr_t and intptr_t come from
+// there: defining them by hand fights the ABI's own definitions and breaks
+// the moment anything includes a compiler header (stdarg.h for kprintf...).
+#include <stdint.h>
+#include <stddef.h>
 
-typedef signed char		i8_t;
-typedef signed short		i16_t;
-typedef signed int		i32_t;
-typedef signed long long	i64_t;
+typedef uint8_t		ui8_t;
+typedef uint16_t	ui16_t;
+typedef uint32_t	ui32_t;
+typedef uint64_t	ui64_t;
 
-typedef unsigned long long	size_t;
-typedef unsigned long long	uintptr_t;
-typedef signed long long	intptr_t;
+typedef int8_t		i8_t;
+typedef int16_t		i16_t;
+typedef int32_t		i32_t;
+typedef int64_t		i64_t;
 
 typedef struct {
 	uintptr_t xregs[32];

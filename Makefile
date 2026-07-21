@@ -7,7 +7,8 @@ SRC_DIR		:= src
 BUILD_DIR	:= build
 
 CCFLAGS 	:= -Wall -Wextra --target=riscv64-unknown-none-elf \
-		   -I$(INCLUDE_DIR) -march=rv64gc -mabi=lp64d -mcmodel=medany
+		   -I$(INCLUDE_DIR) -march=rv64gc -mabi=lp64d -mcmodel=medany \
+		   -ffreestanding
 LDFLAGS		:= -fuse-ld=lld -nostdlib -T$(SRC_DIR)/linker.ld \
 		   -Wl,-Map=$(BUILD_DIR)/os.map
 
