@@ -16,6 +16,21 @@
 #define SYSCALL_PGPU_CMD   0x20
 #define SYSCALL_SBRK       0x30
 
+// RESERVED, deliberately not implemented. These become real syscalls the day
+// there is a filesystem to answer them. Until then the SDK answers them
+// locally, because with a fixed set of descriptors the answers are known at
+// compile time and a trap buys nothing.
+//
+// fstat is the clearest case: implementing it here would mean pinning down a
+// struct stat layout now, with no filesystem to inform what belongs in it.
+// That is the wrong order to decide an ABI in.
+//
+// isatty gets no number at all. It is not a syscall even on Unix; a libc
+// derives it from fstat.
+#define SYSCALL_CLOSE      0x04
+#define SYSCALL_FSTAT      0x05
+#define SYSCALL_LSEEK      0x06
+
 // THE CONTRACT WITH A GAME
 //
 // These three descriptors are valid from the game's first instruction. There
