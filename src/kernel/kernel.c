@@ -1,29 +1,40 @@
 #include "kernel.h"
+#include "kprintf.h"
 #include "hal.h"
 
 static ui32_t current_input = 0;
 
-static void kputhex(uintptr_t v) {
-	const uart_hal_t *hal = get_hal();
-	const char *digits = "0123456789abcdef";
+// Names come straight from the privileged spec's exception code table. An
+// error code is useless if it doesn't tell you where to look.
+static const char *trap_cause_name(uintptr_t scause) {
+	if ((i64_t)scause < 0)
+		return "Interrupt";
 
-	hal->uart_puts("0x");
-	for (i32_t i = 60; i >= 0; i -= 4)
-		hal->uart_putc(digits[(v >> i) & 0xf]);
+	switch (scause) {
+		case 0:  return "Instruction address misaligned";
+		case 1:  return "Instruction access fault";
+		case 2:  return "Illegal instruction";
+		case 3:  return "Breakpoint";
+		case 4:  return "Load address misaligned";
+		case 5:  return "Load access fault";
+		case 6:  return "Store/AMO address misaligned";
+		case 7:  return "Store/AMO access fault";
+		case 8:  return "Environment call from U-mode";
+		case 12: return "Instruction page fault";
+		case 13: return "Load page fault";
+		case 15: return "Store/AMO page fault";
+		default: return "Unknown cause";
+	}
 }
 
-// Placeholder reporting until kprintf exists. Anything that is not a syscall
-// lands here instead of silently resuming at the wrong instruction.
+// Anything that is not a syscall lands here instead of silently resuming at
+// the wrong instruction.
 void trap_fatal_handler(uintptr_t scause, uintptr_t sepc, uintptr_t stval) {
-	const uart_hal_t *hal = get_hal();
-
-	hal->uart_puts("\n!! FATAL TRAP !!\n  scause = ");
-	kputhex(scause);
-	hal->uart_puts("\n  sepc   = ");
-	kputhex(sepc);
-	hal->uart_puts("\n  stval  = ");
-	kputhex(stval);
-	hal->uart_puts("\nHALTED\n");
+	kprintf("\n!! FATAL TRAP !! %s\n", trap_cause_name(scause));
+	kprintf("  scause = 0x%016lx\n", scause);
+	kprintf("  sepc   = 0x%016lx\n", sepc);
+	kprintf("  stval  = 0x%016lx\n", stval);
+	kprintf("HALTED\n");
 
 	while (1) __asm__ volatile ("wfi");
 }

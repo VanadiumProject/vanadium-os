@@ -12,9 +12,11 @@ CCFLAGS 	:= -Wall -Wextra --target=riscv64-unknown-none-elf \
 LDFLAGS		:= -fuse-ld=lld -nostdlib -T$(SRC_DIR)/linker.ld \
 		   -Wl,-Map=$(BUILD_DIR)/os.map
 
-C_SRCS		:= $(SRC_DIR)/kernel/kernel.c
-ASM_SRCS	:= $(SRC_DIR)/bootloader/entry.S
+C_SRCS		:= $(wildcard $(SRC_DIR)/kernel/*.c)
+ASM_SRCS	:= $(wildcard $(SRC_DIR)/bootloader/*.S)
 
+# The HAL stays explicit: both files define get_hal(), so exactly one of them
+# may ever reach the linker.
 ifeq ($(HAL), virt)
 C_SRCS 		+= $(SRC_DIR)/hal/hal_virt.c
 endif
