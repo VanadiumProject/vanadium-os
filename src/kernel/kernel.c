@@ -41,19 +41,93 @@ void trap_fatal_handler(uintptr_t scause, uintptr_t sepc, uintptr_t stval) {
 	while (1) __asm__ volatile ("wfi");
 }
 
+// Laid out by the linker script, not by us. See src/linker.ld
+extern ui8_t _user_heap_start[];
+extern ui8_t _user_heap_end[];
+
+static ui8_t *user_brk = 0;
+
+// sbrk is the hook picolibc and newlib expect malloc to sit on: move the break
+// by an increment, hand back where it used to be. With no MMU there is nothing
+// to map, so this is a bump pointer inside a region the linker already fixed.
+static uintptr_t sys_sbrk(intptr_t increment) {
+	ui8_t *prev;
+	ui8_t *next;
+
+	if (!user_brk)
+		user_brk = _user_heap_start;
+
+	prev = user_brk;
+	next = user_brk + increment;
+
+	if (next < _user_heap_start || next > _user_heap_end)
+		return (uintptr_t)-1;
+
+	user_brk = next;
+	return (uintptr_t)prev;
+}
+
 uintptr_t syscall_handler(uintptr_t syscall_num, uintptr_t arg0, uintptr_t arg1, uintptr_t arg2) {
-	(void)arg1; (void)arg2; // Silence unused warnings
 	const uart_hal_t *hal = get_hal();
 
 	switch (syscall_num) {
-		case SYSCALL_WRITE:
-			hal->uart_putc((char)arg0);
-			return 0;
+		case SYSCALL_WRITE: {
+			// (fd, buffer, length). The pointer comes from U-mode and we
+			// cannot check it: there is no hardware between us and the
+			// game, by decision. Once the memory map fixes where a game
+			// lives, a range check belongs right here.
+			const char *buf = (const char *)arg1;
+			size_t len = (size_t)arg2;
+
+			if (arg0 != FD_STDOUT && arg0 != FD_STDERR)
+				return (uintptr_t)-1;
+
+			for (size_t i = 0; i < len; i++)
+				hal->uart_putc(buf[i]);
+
+			return len;
+		}
+
+		case SYSCALL_READ: {
+			// Blocking, and stops at a newline the way a line buffered
+			// console is expected to. This exists so that fd 0 is not a
+			// promise we fail to keep; a game is not meant to live here.
+			char *buf = (char *)arg1;
+			size_t len = (size_t)arg2;
+			size_t i = 0;
+
+			if (arg0 != FD_STDIN)
+				return (uintptr_t)-1;
+
+			while (i < len) {
+				char c = (char)hal->uart_getc();
+
+				buf[i++] = c;
+				if (c == '\n' || c == '\r')
+					break;
+			}
+			return i;
+		}
+
+		case SYSCALL_EXIT:
+			// Never returns. If it did, the trap handler would sret back
+			// into a game that has already finished. There is nowhere to
+			// return to yet either: one game is the whole system.
+			kprintf("\n[%lu ms] Game exited, code %ld\n", ktime_ms(), (i64_t)arg0);
+			kprintf("HALTED\n");
+			while (1)
+				__asm__ volatile ("wfi");
+
+		case SYSCALL_SBRK:
+			return sys_sbrk((intptr_t)arg0);
+
 		case SYSCALL_GET_INPUT:
 			// The trap handler now writes this into the caller's a0 slot
 			// before restoring, so the value actually reaches the caller.
 			// In the final version this reads GPIO.
+			(void)arg1; (void)arg2;
 			return current_input;
+
 		default:
 			return (uintptr_t)-1;
 	}

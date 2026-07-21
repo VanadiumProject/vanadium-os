@@ -45,5 +45,19 @@ SECTIONS
     _stack_top = .;
   } > RAM
 
+  /* Memory handed to the game. Separate from the kernel's own stack so that
+     a game running out of room cannot quietly eat the kernel's.
+     See docs/02_Architecture/Memory_Map.md */
+  .user (NOLOAD) : {
+    . = ALIGN(16);
+    _user_heap_start = .;
+    . += 0x100000;          /* 1 MB heap, what sbrk hands out */
+    _user_heap_end = .;
+
+    . = ALIGN(16);
+    . += 0x4000;            /* 16 KB stack, grows down from the top */
+    _user_stack_top = .;
+  } > RAM
+
   _end = .;
 }

@@ -14,6 +14,22 @@
 #define SYSCALL_EXIT       0x03
 #define SYSCALL_GET_INPUT  0x10
 #define SYSCALL_PGPU_CMD   0x20
+#define SYSCALL_SBRK       0x30
+
+// THE CONTRACT WITH A GAME
+//
+// These three descriptors are valid from the game's first instruction. There
+// is no open(): that would need a filesystem, and a console does not need one
+// to print. Any other descriptor is an error.
+//
+// Where they physically go is ours to change. Today all output lands on the
+// debug UART because it can be read without a shell, a screen or a driver.
+// When there is a video console, or a Safety Modes log, fd 1 and fd 2 can be
+// pointed at them without recompiling a single game. The number is the
+// contract; the destination is not.
+#define FD_STDIN           0
+#define FD_STDOUT          1
+#define FD_STDERR          2
 
 // Syscall handler called from assembly trap
 // a7: syscall number, a0-a3: arguments
