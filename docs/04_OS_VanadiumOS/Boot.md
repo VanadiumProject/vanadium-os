@@ -70,9 +70,9 @@ Choosing this route is choosing these consequences, on purpose:
 - **We inherit an upstream's release cadence** for three stages of our own boot.
 
 ## State of the Code
-The kernel currently in the repository is **M-mode**, and always was: `boot.S` was written for
+The kernel in the repository was in **M-mode**, and always was: `boot.S`(now `entry.S`) was written for
 the original RV32 iteration, and the 32-to-64 bit migration changed the width without ever
-revisiting the privilege level. It is a leftover, not a decision, and this document is where
+revisiting the privilege level. It was a leftover, not a decision, and this document is where
 that gets corrected.
 
 The port is smaller than it looks. The trap frame layout, the register save/restore, the
