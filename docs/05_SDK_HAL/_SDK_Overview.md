@@ -65,10 +65,17 @@ are compile-time constants:
 > to design it properly later."
 
 ## The Library Itself
->**OPEN** picolibc or newlib, not decided. picolibc is the recommendation: smaller, RISC-V is a
-> first class target rather than a port, the retarget surface is smaller, and the licensing is one
-> file instead of a mosaic. newlib's argument is familiarity, since it is what devkitPro uses.
-> This decision blocks nothing and can wait.
+**picolibc**, decided. RISC-V is a first class target rather than a port, the retarget surface is
+small enough to write in an afternoon, and the licensing is one file instead of a mosaic spread
+across hundreds — which matters for a project that promises to document everything it ships.
+
+newlib was the real alternative and lost narrowly. Its arguments were good ones: it arrives free
+inside any prebuilt `riscv64-unknown-elf` GCC toolchain, third party C code is usually tested
+against it, and it is what devkitPro uses so its failure modes are already familiar here.
+
+>"Size did not decide this, and it is worth saying so. A C library is tens of kilobytes against a
+> game's twelve megabytes. That is noise. Anybody repeating the size argument for a console this
+> size is arguing from a microcontroller's habits."
 
 Whichever wins, it is **statically linked into each game** and is not shipped in the OS
 filesystem. A `.a` is a link-time artifact and cannot be shared at runtime anyway; sharing would
