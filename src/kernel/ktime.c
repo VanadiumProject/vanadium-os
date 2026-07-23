@@ -1,5 +1,5 @@
-#include "ktime.h"
-#include "hal.h"
+#include <ktime.h>
+#include <hal.h>
 
 ui64_t ktime_ticks(void) {
 	ui64_t t;

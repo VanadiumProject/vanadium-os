@@ -1,7 +1,7 @@
-#include "kernel.h"
-#include "kprintf.h"
-#include "ktime.h"
-#include "hal.h"
+#include <kernel.h>
+#include <kprintf.h>
+#include <ktime.h>
+#include <hal.h>
 
 static ui32_t current_input = 0;
 

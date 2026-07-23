@@ -1,5 +1,5 @@
-#include "kprintf.h"
-#include "hal.h"
+#include <kprintf.h>
+#include <hal.h>
 
 // Longest thing we render is a 64 bit value in base 10 (20 digits).
 #define KP_BUF	24
