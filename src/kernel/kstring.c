@@ -1,4 +1,5 @@
 #include <kstring.h>
+#include <stdint.h>
 
 __no_builtin void *memcpy(void *dest, const void *src, size_t n){
     char *d = dest;

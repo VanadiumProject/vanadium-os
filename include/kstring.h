@@ -1,7 +1,7 @@
 #ifndef KSTRING_H
 #define KSTRING_H
 
-#include "types.h"
+#include <stddef.h>
 
 #define __no_builtin __attribute__((no_builtin))
 
