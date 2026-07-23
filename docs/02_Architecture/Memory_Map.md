@@ -1,4 +1,4 @@
->"64 MB of RAM is more than the necessary for this application", we don't see it like that, 64 is the ceiling, it isn't obligatory nor limited, the recommended value is actually 28 MB, but we'll never tell you what to do."
+>"""64 MB of RAM is more than the necessary for this application", we don't see it like that, 64 is the ceiling, it isn't obligatory nor limited, the recommended value is actually 28 MB, but we'll never tell you what to do."
 ## Why 28 MB?
 - The idea is to give enough RAM for 2 720p screens, [more info](../03_Hardware/Expansion_Connector.md); The OS, and the game to run at the same time.
 	- The screens: For 720p(1280x720), RGBA(4 bytes), double buffering, a single screen uses 7.03 MB of RAM, for two of them 14.06 MB
